@@ -247,8 +247,394 @@
             const idComputer = list_computers.value;
             const response = await fetch(`/statistics/find/${idComputer}`);
             const statistics = await response.json();
-            changeGraph(statistics, idComputer);
+
+            graficoArmazenamento(statistics, idComputer);
+            graficoProcessador(statistics, idComputer);
+            graficoRam(statistics, idComputer);
+
         }
+
+            
+        function graficoArmazenamento(resposta, idMaquina){
+            //console.log('iniciando plotagem do gráfico...');
+            var cor = ideal;
+
+            if(resposta[0].disk_usage >= percentual_disk){
+                mensagemSlack(`Alerta! Sua memória ram se encontra em ${resposta[0].disk_usage}% de uso`)
+                cor = critico
+                Swal.fire({
+                    position: "top",
+                    title: "Alerta!",
+                    text: "Seu HD se encontra em leitura crítica!.",
+                    color: "#fff",
+                    icon: "warning",
+                    iconColor: "#EB1616",
+                    background: "#191C24",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+            }
+
+            // Criando estrutura para plotar gráfico - labels
+            let labels = [];
+
+            // Criando estrutura para plotar gráfico - dados
+            let dados = {
+                labels: labels,
+                datasets: [{
+                    label: 'Leitura',
+                    data: [],
+                    fill: true,
+                    borderColor: cor,
+                    backgroundColor: cor,
+                    tension: 0.1
+                }]
+            };
+
+            // Inserindo valores recebidos em estrutura para plotar o gráfico
+            for (i = 0; i < resposta.length; i++) {
+                var registro = resposta[i];
+                labels.push(registro.disk_total);
+                dados.datasets[0].data.push(registro.disk_usage);
+            }
+
+            console.log('----------------------------------------------')
+            console.log('O gráfico será plotado com os respectivos valores:')
+            console.log('Labels:')
+            console.log(labels)
+            console.log('Dados:')
+            console.log(dados.datasets)
+            console.log('----------------------------------------------')
+
+            // Criando estrutura para plotar gráfico - config
+            const config = {
+                type: 'line',
+                data: dados,
+            };
+
+            // Adicionando gráfico criado em div na tela
+            let myChart = new Chart(
+                document.getElementById(`myBarChartArmazenamento`),
+                config
+            );
+
+            setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+        }
+    
+        function updateGraficoArmazenamento(idMaquina, dados, myChart){
+        
+            fetch(`/statistics/find/${idMaquina}`, { cache: 'no-store' }).then(function (response) {
+                if (response.ok) {
+                    response.json().then(function (novoRegistro) {
+
+                        // alertar(novoRegistro, idAquario);
+                        console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+                        console.log(`Dados atuais do gráfico:`);
+                        console.log(dados);
+
+
+                        if (novoRegistro[0].disk_usage == dados.labels[dados.labels.length - 1]) {
+                            console.log("---------------------------------------------------------------")
+                            console.log("Como não há dados novos para captura, o gráfico não atualizará.")
+                            //avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. <br> Como não há dados novos a exibir, o gráfico não atualizará."
+                            console.log("Horário do novo dado capturado:")
+                            console.log(novoRegistro[0].disk_usage)
+                            console.log("Horário do último dado capturado:")
+                            console.log(dados.labels[dados.labels.length - 1])
+                            console.log("---------------------------------------------------------------")
+                        } else {
+                            // tirando e colocando valores no gráfico
+                            dados.labels.shift(); // apagar o primeiro
+                            dados.labels.push(novoRegistro[0].disk_usage); // incluir um novo momento
+
+                            dados.datasets[0].data.shift();  // apagar o primeiro de umidade
+                            dados.datasets[0].data.push(novoRegistro[0].disk_usage); // incluir uma nova medida de umidade
+
+                            myChart.update();
+                        }
+
+
+                        var usoArmazenamento = document.getElementById("usoArmazenamento");
+                        var totalArmazenamento = document.getElementById("totalArmazenamento");
+                        var utilizadoArmazenamento = document.getElementById("utilizadoArmazenamento");
+                        
+                        var total = novoRegistro[novoRegistro.length - 1].disk_total 
+                        var utilizado = novoRegistro[novoRegistro.length - 1].disk_usage
+                        var porcentagemUso = (utilizado / total) * 100
+                
+                        totalArmazenamento.innerHTML =`<p>Total: <span style="font-size: 1rem; color: #fff; font-weight: bold">${total} GB</span> </p>`;
+                        utilizadoArmazenamento.innerHTML =`<p>Utilizado: <span style="font-size: 1rem; color: #fff; font-weight: bold">${utilizado} GB</span></p>`;
+                        usoArmazenamento.innerHTML =`Porcentagem de uso: <spam style="font-size: 1rem; color: #fff; font-weight: bold">${porcentagemUso}%</spam>`;
+
+                        // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                        proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                    });
+                } else {
+                    console.error('Nenhum dado encontrado ou erro na API');
+                    // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                    proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                }
+            })
+                .catch(function (error) {
+                    console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+                });
+
+        }
+
+
+        function graficoProcessador(resposta, idMaquina){
+            console.log('iniciando plotagem do gráfico...');
+
+            var cor = ideal;
+
+            // console.log('iniciando plotagem do gráfico...');
+            if(resposta[0].cpu_usage >= percentual_cpu){
+            mensagemSlack(`Alerta! Seu processador está em ${resposta[0].cpu_usage}% de uso`)
+            cor = critico
+            Swal.fire({
+                position: "top",
+                title: "Alerta!",
+                text: "Seu HD se encontra em leitura crítica!.",
+                color: "#fff",
+                icon: "warning",
+                iconColor: "#EB1616",
+                background: "#191C24",
+                showConfirmButton: false,
+                timer: 1500
+            });
+    
+            // Criando estrutura para plotar gráfico - labels
+            let labels = [];
+
+            // Criando estrutura para plotar gráfico - dados
+            let dados = {
+                labels: labels,
+                datasets: [{
+                    label: 'Uso do processador (em %)',
+                    data: [],
+                    fill: true,
+                    borderColor: cor,
+                    backgroundColor: cor,
+                    tension: 0.1
+                }]
+            };
+
+            // Inserindo valores recebidos em estrutura para plotar o gráfico
+            for (i = 0; i < resposta.length; i++) {
+                var registro = resposta[i];
+                labels.push(registro.cpu_total);
+                dados.datasets[0].data.push(registro.cpu_usage);
+            }
+
+            console.log('----------------------------------------------')
+            console.log('O gráfico será plotado com os respectivos valores:')
+            console.log('Labels:')
+            console.log(labels)
+            console.log('Dados:')
+            console.log(dados.datasets)
+            console.log('----------------------------------------------')
+
+            // Criando estrutura para plotar gráfico - config
+            const config = {
+                type: 'line',
+                data: dados,
+            };
+
+            // Adicionando gráfico criado em div na tela
+            let myChart = new Chart(
+                document.getElementById(`myBarChartProcessador`),
+                config
+            );
+
+            setTimeout(() => updateGraficoProcessador(idMaquina, dados, myChart), 2000);
+        }
+        }
+    
+        function updateGraficoProcessador(idMaquina, dados, myChart){
+            fetch(`/statistics/find/${idMaquina}`, { cache: 'no-store' }).then(function (response) {
+                if (response.ok) {
+                    response.json().then(function (novoRegistro) {
+
+                        // alertar(novoRegistro, idAquario);
+                        console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+                        console.log(`Dados atuais do gráfico:`);
+                        console.log(dados);
+
+
+                        if (novoRegistro[0].cpu_usage == dados.labels[dados.labels.length - 1]) {
+                            console.log("---------------------------------------------------------------")
+                            console.log("Como não há dados novos para captura, o gráfico não atualizará.")
+                            //avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. <br> Como não há dados novos a exibir, o gráfico não atualizará."
+                            console.log("Horário do novo dado capturado:")
+                            console.log(novoRegistro[0].cpu_usage)
+                            console.log("Horário do último dado capturado:")
+                            console.log(dados.labels[dados.labels.length - 1])
+                            console.log("---------------------------------------------------------------")
+                        } else {
+                            // tirando e colocando valores no gráfico
+                            dados.labels.shift(); // apagar o primeiro
+                            dados.labels.push(novoRegistro[0].cpu_usage); // incluir um novo momento
+
+                            dados.datasets[0].data.shift();  // apagar o primeiro de umidade
+                            dados.datasets[0].data.push(novoRegistro[0].cpu_usage); // incluir uma nova medida de umidade
+
+                            myChart.update();
+                        }
+
+
+                        var total = novoRegistro[novoRegistro.length - 1].cpu_total
+                        var utilizado = novoRegistro[novoRegistro.length - 1].cpu_usage
+                        var porcentagemUso = (novoRegistro[novoRegistro.length - 1].cpu_usage / novoRegistro[novoRegistro.length - 1].cpu_total) * 100
+                        var sistemaOperacional = novoRegistro[novoRegistro.length - 1].system_info
+                
+                        var so = document.getElementById("so");
+                        var usoCPU = document.getElementById("usoCpu");
+                
+                        so.innerHTML = `<p>Sistema Operacional: <span style="font-size: 1rem; color: #fff; font-weight: bold">Ubuntu</span></p>`
+                        usoCPU.innerHTML = `<p>Processador: <span style="font-size: 1rem; color: #fff; font-weight: bold">${utilizado}%</span></p>`
+                        // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                        proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                    });
+                } else {
+                    console.error('Nenhum dado encontrado ou erro na API');
+                    // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                    proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                }
+            })
+                .catch(function (error) {
+                    console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+                });
+        
+
+        }
+
+
+        function graficoRam(resposta, idMaquina){
+            var cor = ideal;
+
+        // console.log('iniciando plotagem do gráfico...');
+        if(resposta[0].ram_usage >= percentual_ram){
+            mensagemSlack(`Alerta! Sua memória ram se encontra em ${resposta[0].ram_usage}% de uso`)
+            cor = critico
+            Swal.fire({
+                position: "top",
+                title: "Alerta!",
+                text: "Seu HD se encontra em leitura crítica!.",
+                color: "#fff",
+                icon: "warning",
+                iconColor: "#EB1616",
+                background: "#191C24",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+
+            // Criando estrutura para plotar gráfico - labels
+            let labels = [];
+
+            // Criando estrutura para plotar gráfico - dados
+            let dados = {
+                labels: labels,
+                datasets: [{
+                    label: 'Uso de Ram (em %)',
+                    data: [],
+                    fill: true,
+                    borderColor: cor,
+                    backgroundColor: cor,
+                    tension: 0.1
+                }]
+            };
+
+            // Inserindo valores recebidos em estrutura para plotar o gráfico
+            for (i = 0; i < resposta.length; i++) {
+                var registro = resposta[i];
+                labels.push(registro.ram_total);
+                dados.datasets[0].data.push(registro.ram_usage);
+            }
+
+            console.log('----------------------------------------------')
+            console.log('O gráfico será plotado com os respectivos valores:')
+            console.log('Labels:')
+            console.log(labels)
+            console.log('Dados:')
+            console.log(dados.datasets)
+            console.log('----------------------------------------------')
+
+            // Criando estrutura para plotar gráfico - config
+            const config = {
+                type: 'line',
+                data: dados,
+            };
+
+            // Adicionando gráfico criado em div na tela
+            let myChart = new Chart(
+                document.getElementById(`myBarChartRam`),
+                config
+            );
+
+            setTimeout(() => updateGraficoRam(idMaquina, dados, myChart), 2000);
+        }
+        
+        function updateGraficoRam(idMaquina, dados, myChart){   
+            fetch(`/statistics/find/${idMaquina}`, { cache: 'no-store' }).then(function (response) {
+                if (response.ok) {
+                    response.json().then(function (novoRegistro) {
+
+                        // alertar(novoRegistro, idAquario);
+                        console.log(`Dados recebidos: ${JSON.stringify(novoRegistro)}`);
+                        console.log(`Dados atuais do gráfico:`);
+                        console.log(dados);
+
+                        if (novoRegistro[0].ram_usage == dados.labels[dados.labels.length - 1]) {
+                            console.log("---------------------------------------------------------------")
+                            console.log("Como não há dados novos para captura, o gráfico não atualizará.")
+                            //avisoCaptura.innerHTML = "<i class='fa-solid fa-triangle-exclamation'></i> Foi trazido o dado mais atual capturado pelo sensor. <br> Como não há dados novos a exibir, o gráfico não atualizará."
+                            console.log("Horário do novo dado capturado:")
+                            console.log(novoRegistro[0].ram_usage)
+                            console.log("Horário do último dado capturado:")
+                            console.log(dados.labels[dados.labels.length - 1])
+                            console.log("---------------------------------------------------------------")
+                        } else {
+                            // tirando e colocando valores no gráfico
+                            dados.labels.shift(); // apagar o primeiro
+                            dados.labels.push(novoRegistro[0].ram_usage); // incluir um novo momento
+
+                            dados.datasets[0].data.shift();  // apagar o primeiro de umidade
+                            dados.datasets[0].data.push(novoRegistro[0].ram_usage); // incluir uma nova medida de umidade
+
+                            myChart.update();
+                        }
+
+                        var usoRam = document.getElementById("usoRam");
+                        var totalRam = document.getElementById("totalRam");
+                        var utilizadoRam = document.getElementById("utilizadoRam");
+                        
+                        var total = novoRegistro[novoRegistro.length - 1].ram_total 
+                        var utilizado = novoRegistro[novoRegistro.length - 1].ram_usage
+                        var porcentagemUso = (utilizado / total) * 100
+                
+                        totalRam.innerHTML =`<p>Total: <span style="font-size: 1rem; color: #fff; font-weight: bold">${total} GB</span> </p>`;
+                        utilizadoRam.innerHTML =`<p>Utilizado: <span style="font-size: 1rem; color: #fff; font-weight: bold">${utilizado} GB</span></p>`;
+                        usoRam.innerHTML =`Porcentagem de uso: <spam style="font-size: 1rem; color: #fff; font-weight: bold">${porcentagemUso}%</spam>`;
+
+                        // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                        proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                    });
+                } else {
+                    console.error('Nenhum dado encontrado ou erro na API');
+                    // Altere aqui o valor em ms se quiser que o gráfico atualize mais rápido ou mais devagar
+                    proximaAtualizacao = setTimeout(() => updateGraficoArmazenamento(idMaquina, dados, myChart), 2000);
+                }
+            })
+                .catch(function (error) {
+                    console.error(`Erro na obtenção dos dados p/ gráfico: ${error.message}`);
+                });
+
+
+        
+        }
+
 
         function changeGraph(statistics, idComputer) {
             
@@ -350,6 +736,7 @@
                 }
             });
         }
+   
     </script>
 </body>
 </html>
