@@ -149,7 +149,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="./perfil.html" class="dropdown-item">Meu perfil</a>
-                            <a href="#" class="dropdown-item">Sair</a>
+                            <a href="./signin.html" class="dropdown-item">Sair</a>
                         </div>
                     </div>
                 </div>
@@ -244,10 +244,14 @@
     <script src="js/index.js"></script>
     <script>
         window.addEventListener('DOMContentLoaded', async () => {
-            const response = await fetch('/computer/find');
-            const computers = await response.json();
-            console.log(computers);
-            computers.forEach(c => {
+            h6_name.innerHTML = sessionStorage.name;
+            type_user.innerHTML = sessionStorage.type;
+            const response = await fetch("/computer/having");
+            const activeComputers = await response.json();
+            const res = await fetch("/computer/find");
+            const nonActiveComputers = await res.json();
+
+            activeComputers.forEach(c => {
                 listaTotens.innerHTML += `
                     <td>ID-${c.id}</td>
                     <td>${c.hostname}</td>
@@ -255,6 +259,14 @@
                     <td>
                         <button class="btn btn-danger" onclick="reboot(${c.id})">REINICIAR</button>
                     </td>
+                `
+            });
+
+            nonActiveComputers.forEach(c => {
+                listaTotens.innerHTML += `
+                    <td>ID-${c.id}</td>
+                    <td>${c.hostname}</td>
+                    <td id=${c.id} class='bg-danger'>DESATIVADO</td>
                 `
             });
         })

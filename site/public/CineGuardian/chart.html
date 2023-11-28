@@ -81,8 +81,8 @@
                         <span id="type_user"></span>
                     </div>
                 </div>
-                <div class="navbar-nav w-100">
-                    <a href="#" class="nav-item nav-link" id="pag_totens"><i
+                <div class="navbar-nav w-100" id="navbar_content">
+                    <a href="./dashboard.html" class="nav-item nav-link" id="pag_totens"><i
                             class="fa fa-tachometer-alt me-2"></i>Totens</a>
                     <a href="./cadastroTecnico.html" class="nav-item nav-link" id="pag_tecnico"><i
                             class="fa fa-tachometer-alt me-2"></i>Cadastrar Técnico</a>
@@ -133,7 +133,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="./perfil.html" class="dropdown-item">Meu perfil</a>
-                            <a href="#" class="dropdown-item">Sair</a>
+                            <a href="./signin.html" class="dropdown-item">Sair</a>
                         </div>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                             <h3 class="mb-4">Memória RAM</h3>
                             <span id="totalRam">Total: </p></span>
                             <span id="utilizadoRam">Utilizado: </p></span>
-                            <span id="usoRam">Porcentagem de Uso: </span>
+                            <span id="percentualUso">Porcentagem de Uso: </span>
                             <h5 id="reiniciadasDia"></h5>
                             <canvas id="chart2" width="400" height="200"></canvas>
                         </div>
@@ -233,9 +233,18 @@
         var chartDisk;
  
         window.addEventListener('DOMContentLoaded', async () => {
-            const response = await fetch('/computer/find');
+            const type = sessionStorage.type;
+            const name = sessionStorage.name;
+            h6_name.innerHTML = name;
+            type_user.innerHTML = type;
+            if(type == "tecnico"){
+                navbar_content.innerHTML = `
+                    <a href="chart.html" class="nav-item nav-link active" id="pag_estatisticas"><i
+                    class="fa fa-chart-bar me-2"></i>Estatísticas</a>
+                `
+            }
+            const response = await fetch('/computer/having');
             const computers = await response.json();
-
             computers.forEach(c => {
                 list_computers.innerHTML += `
                     <option value=${c.id}>Totem ${c.id}</option>
@@ -274,6 +283,15 @@
             usoCpu.innerHTML =`
                 Uso do processador: <b class='text-white'>${cpuUsage.toFixed(2)}%</b> 
             `;
+
+            const ramTotal = statistics[0].ram_total.toFixed();
+            const ramUsage = statistics[0].ram_usage.toFixed();
+            const percentRam = ((ramUsage * 100) / ramTotal).toFixed();
+
+            totalRam.innerHTML = "Total: " + ramTotal + "GB<br>";
+            utilizadoRam.innerHTML = "Utilizado: " + ramUsage + "GB<br>";
+            percentualUso.innerHTML = "Percentual em Uso: " + percentRam + "%<br>";
+
             sendAlertSlack(cpuUsage);
 
             ctxCPU = document.getElementById('chart1').getContext('2d');
@@ -290,55 +308,103 @@
                 listRam.push(s.ram_usage.toFixed(2));
             });
 
-            var genericConfig = {
-                labels: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+            var cpuConfig = {
+                labels: ["5s", "10s", "15s", "20s", "25s", "30s", "35s", "40s", "45s", "50s"].reverse(),
                 datasets: [
                     {
-                        label: '',
-                        data: [],
+                        label: 'Uso da CPU(%)',
+                        data: listCpu.reverse(),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         borderWidth: 2,
-                        fill: false
+                        fill: true
                     }
                 ]
             };
 
-            var opt = {
+
+            var ramConfig = {
+                labels: ["5s", "10s", "15s", "20s", "25s", "30s", "35s", "40s", "45s", "50s"].reverse(),
+                datasets: [
+                    {
+                        label: 'Ram em uso(GB)',
+                        data: listRam.reverse(),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }
+                ]
+            };
+
+
+            var diskConfig = {
+                labels: ["5s", "10s", "15s", "20s", "25s", "30s", "35s", "40s", "45s", "50s"].reverse(),
+                datasets: [
+                    {
+                        label: 'Disco em Uso(GB)',
+                        data: listDisk.reverse(),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }
+                ]
+            };
+
+            var optCpu = {
                 scales: {
-                y: {
-                    beginAtZero: true
-                }
+                y:  {
+                        beginAtZero: true,
+                        max: 100
+                    }
                 }
             };
 
-            genericConfig.datasets[0].data = listCpu;
-            genericConfig.datasets[0].label = 'Uso da CPU(%)';
+            var optRam = {
+                scales: {
+                y:  {
+                        beginAtZero: true,
+                        max: statistics[0].ram_total
+                    }
+                }
+            };
+
+            var optDisk = {
+                scales: {
+                y:  {
+                        beginAtZero: true,
+                        max: statistics[0].disk_total
+                    }
+                }
+            };
 
             chartCPU = new Chart(ctxCPU, {
                 type: 'line',
-                data: genericConfig,
-                options: opt
+                data: cpuConfig,
+                options: optCpu
             });
-
-            genericConfig.datasets[0].data = listRam;
-            genericConfig.datasets[0].label = 'Ram em uso (GB)';
 
             chartRam = new Chart(ctxRam, {
                 type: 'line',
-                data: genericConfig,
-                options: opt
+                data: ramConfig,
+                options: optRam
             });
-            
-            genericConfig.datasets[0].data = listDisk;
-            genericConfig.datasets[0].label = 'Disco em uso (GB)';
 
             chartDisk = new Chart(ctxDisk, {
                 type: 'line',
-                data: genericConfig,
-                options: opt
+                data: diskConfig,
+                options: optDisk
             });
+
+            setInterval(async () => {
+                const res = await fetch(`/statistics/last/${idComputer}`);
+                const data = await res.json();
+                
+                const statistic = data[0];
+                updateChartCPU(statistic);
+                updateChartRam(statistic);
+                updateChartDisk(statistic);
+            }, 5000);
         }  
-        
+    
         async function sendAlertSlack(cpuUsage){
             await fetch("/slack/send", {
                 method: 'POST',
@@ -349,6 +415,49 @@
                     "Content-Type": "application/json",
                 }
             });
+        }
+
+        function updateChartCPU(statistic){
+            const cpu = statistic.cpu_usage.toFixed(2);
+            
+            
+            usoCpu.innerHTML =`
+                Uso do processador: <b class='text-white'>${cpu}%</b> 
+            `;
+
+            chartCPU.data.datasets[0].label = "Uso da CPU(%)";
+            chartCPU.data.datasets[0].data.push(cpu);
+            chartCPU.data.datasets[0].data.shift();
+            chartCPU.update();
+        }
+
+        function updateChartRam(statistic){
+            const ramTotal = statistic.ram_total.toFixed();
+            const ramUsage = statistic.ram_usage.toFixed();
+            const percentRam = ((ramUsage * 100) / ramTotal).toFixed();
+
+            totalRam.innerHTML = "Total: " + ramTotal + "GB<br>";
+            utilizadoRam.innerHTML = "Utilizado: " + ramUsage + "GB<br>";
+            percentualUso.innerHTML = "Percentual em Uso: " + percentRam + "%<br>";
+
+            chartRam.data.datasets[0].label = "Ram em Uso(GB)";
+            chartRam.data.datasets[0].data.push(ramUsage);
+            chartRam.data.datasets[0].data.shift();
+            chartRam.update();
+        }
+
+        function updateChartDisk(statistic){
+            const diskTotal = statistic.disk_total.toFixed();
+            const diskUsage = statistic.disk_usage.toFixed();
+
+            totalArmazenamento.innerHTML = "Total: " + diskTotal + "GB<br>";
+            utilizadoArmazenamento.innerHTML = "Utilizado: " + diskUsage + "GB<br>";
+            usoArmazenamento.innerHTML = "Percentual em uso: " + ((diskUsage * 100) / diskTotal).toFixed() + "%<br> ";
+            
+            chartDisk.data.datasets[0].label = "Armazenamento em Uso(GB)";
+            chartDisk.data.datasets[0].data.push(diskUsage);
+            chartDisk.data.datasets[0].data.shift();
+            chartDisk.update();
         }
     </script>
 </body>

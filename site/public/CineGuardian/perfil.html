@@ -62,7 +62,7 @@
                         <span id="type_user"></span>
                     </div>
                 </div>
-                <div class="navbar-nav w-100">
+                <div class="navbar-nav w-100" id="navbar_content">
                     <a href="./dashboard.html" class="nav-item nav-link" id="pag_totens"><i
                             class="fa fa-tachometer-alt me-2"></i>Totens</a>
                     <a href="./cadastroTecnico.html" id="pag_tecnico" class="nav-item nav-link"><i
@@ -152,7 +152,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="./perfil.html" class="dropdown-item">Meu perfil</a>
-                            <a href="#" class="dropdown-item">Sair</a>
+                            <a href="./signin.html" class="dropdown-item">Sair</a>
                         </div>
                     </div>
                 </div>
@@ -288,7 +288,7 @@
                         justify-content: space-around;
                         align-items: center;">
                             <div>
-                                <h3 style="text-align: center; font-size: 2rem">Técnicos cadastrados:</h3>
+                                <h3 style="text-align: center; font-size: 2rem" id="h3_tecnicos">Técnicos cadastrados:</h3>
                                 <ul class="listaTecnicos" id="listaTecnicos"></ul>
                             </div>
                             <div>
@@ -323,29 +323,50 @@
                     userNome.innerHTML = sessionStorage.name;
                     userEmail.innerHTML = sessionStorage.email;
                     userCargo.innerHTML = sessionStorage.type;
+                    h6_name.innerHTML = sessionStorage.name;
+                    type_user.innerHTML = sessionStorage.type;
                     
-                    const users = await findUsersByType('tecnico');
-                    const computers = await findAllComputers();
-                    
-                    users.forEach(u => {
-                        listaTecnicos.innerHTML += `
-                            <li>
-                                Nome completo: ${u.name}<br>
-                                E-mail: ${u.email}<br>
-                                Cargo: ${u.type_user}<br>
-                            </li>
-                        `;
-                    });
+                    if(sessionStorage.type == "tecnico"){
+                        navbar_content.innerHTML = `
+                            <a href="chart.html" class="nav-item nav-link active" id="pag_estatisticas"><i
+                            class="fa fa-chart-bar me-2"></i>Estatísticas</a>
+                        `
+                        h3_tecnicos.innerHTML = "";
+                        const computers = await findAllComputers();
 
-                    computers.forEach(c => {
-                        listaTotens.innerHTML += `
-                            <li>
-                                ID: ${c.id}<br>
-                                Apelido: ${c.hostname}<br>
-                                Status: ATIVO <br>
-                            </li>
-                        `;
-                    });
+                        computers.forEach(c => {
+                            listaTotens.innerHTML += `
+                                <li>
+                                    ID: ${c.id}<br>
+                                    Apelido: ${c.hostname}<br>
+                                    Status: ATIVO <br>
+                                </li>
+                            `;
+                        });
+                    } else {
+                        const users = await findUsersByType('tecnico');
+                        const computers = await findAllComputers();
+                        
+                        users.forEach(u => {
+                            listaTecnicos.innerHTML += `
+                                <li>
+                                    Nome completo: ${u.name}<br>
+                                    E-mail: ${u.email}<br>
+                                    Cargo: ${u.type_user}<br>
+                                </li>
+                            `;
+                        });
+
+                        computers.forEach(c => {
+                            listaTotens.innerHTML += `
+                                <li>
+                                    ID: ${c.id}<br>
+                                    Apelido: ${c.hostname}<br>
+                                    Status: ATIVO <br>
+                                </li>
+                            `;
+                        });
+                    }
                 })
 
                 async function findUsersByType(type){

@@ -7,4 +7,8 @@ router.get("/find/:idComputer", async(req, res) => {
     controller.findStatisticsByComputer(req, res);
 });
 
+router.get("/last/:idComputer", async(req, res) => {
+    controller.findLatestStatisticsByComputer(req, res);
+});
+
 module.exports = router;
