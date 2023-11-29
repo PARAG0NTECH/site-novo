@@ -21,8 +21,15 @@ function findUserByType(type){
     return database.commit(command);
 }
 
+function updateMetric(ram, disk, cpu) {
+    var command =
+        ` update tb_alerts set percentual_cpu = '${cpu}', percentual_disk = '${disk}', percentual_ram = '${ram}' where tb_companies_id = 1;`;
+    return database.commit(command);
+}
+
 module.exports = {
     create,
     login,
-    findUserByType
+    findUserByType,
+    updateMetric
 }
