@@ -2,7 +2,7 @@ const database = require("../database/config")
 
 async function create({ name, email, password, type }){
     const command = `
-        INSERT INTO tb_users (name, email, password, type_user) VALUES ('${name}', '${email}', '${password}', '${type}');
+        INSERT INTO tb_users (name, email, password, type_user, fk_empresa) VALUES ('${name}', '${email}', '${password}', '${type}', 1);
     `
     await database.commit(command);
 }

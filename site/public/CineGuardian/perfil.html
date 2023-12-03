@@ -79,9 +79,7 @@
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-                <a onclick="editarperfil()" class="navbar-brand d-flex d-lg-none me-4">
-                    <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
-                </a>
+               
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
@@ -225,16 +223,6 @@
                                 <p style="font-size: 1.5rem;"><span style="color: #fff; font-weight: 700">Cargo: </span>
                                     <span id="userCargo"></span>
                             </li>
-                            <li>
-                                <button onclick="editarperfil()" class="btn btn-primary py-3 w-100 mb-4">
-                                    Editar Perfil
-                                </button>
-                            </li>
-                            <li>
-                                <button onclick="editarEmpresa()" class="btn btn-primary py-3 w-100 mb-4">
-                                    Editar Empresa
-                                </button>
-                            </li>
                         </ul>
                     </div>
                     <div style="display: flex; justify-content: center; align-items: center;">
@@ -339,7 +327,6 @@
                                 <li>
                                     ID: ${c.id}<br>
                                     Apelido: ${c.hostname}<br>
-                                    Status: ATIVO <br>
                                 </li>
                             `;
                         });
@@ -362,7 +349,6 @@
                                 <li>
                                     ID: ${c.id}<br>
                                     Apelido: ${c.hostname}<br>
-                                    Status: ATIVO <br>
                                 </li>
                             `;
                         });

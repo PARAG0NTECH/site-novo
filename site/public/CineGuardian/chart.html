@@ -292,8 +292,6 @@
             utilizadoRam.innerHTML = "Utilizado: " + ramUsage + "GB<br>";
             percentualUso.innerHTML = "Percentual em Uso: " + percentRam + "%<br>";
 
-            sendAlertSlack(cpuUsage);
-
             ctxCPU = document.getElementById('chart1').getContext('2d');
             ctxRam = document.getElementById('chart2').getContext('2d');
             ctxDisk = document.getElementById('chart3').getContext('2d');
@@ -402,14 +400,21 @@
                 updateChartCPU(statistic);
                 updateChartRam(statistic);
                 updateChartDisk(statistic);
+                sendAlertSlack(statistic.cpu_usage, statistic.disk_usage, statistic.ram_usage);
             }, 5000);
         }  
     
-        async function sendAlertSlack(cpuUsage){
+        async function sendAlertSlack(cpuUsage, diskUsage, ramUsage){
             await fetch("/slack/send", {
                 method: 'POST',
                 body: JSON.stringify({
-                    text: "Uso da CPU MUITO ALTO: " + cpuUsage.toFixed(2) + "%"
+                    text: `
+                        Uso da CPU MUITO ALTO ${cpuUsage.toFixed(2)} %
+
+                        Uso da RAM MUITO ALTO ${ramUsage.toFixed(2)} %
+
+                        Amazenamento MUITO ALTO ${diskUsage.toFixed(2)} %
+                    `
                 }),
                 headers: {
                     "Content-Type": "application/json",

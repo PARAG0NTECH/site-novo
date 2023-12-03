@@ -17,7 +17,22 @@ async function findComputersHavingStatistics() {
     return await database.commit(command);
 }
 
+async function reboot(id) {
+    const command = `
+        UPDATE tb_restart SET restart_required = 'true' WHERE id_computer = ${id}; 
+    `;
+    await database.commit(command);
+    setTimeout(async () => {
+        const command2 = `
+            UPDATE tb_restart SET restart_required = 'false' WHERE id_computer = ${id}; 
+        `;
+        await database.commit(command2);
+    }, 3000);
+}
+
+
 module.exports = {
     findAll,
-    findComputersHavingStatistics
+    findComputersHavingStatistics,
+    reboot
 }

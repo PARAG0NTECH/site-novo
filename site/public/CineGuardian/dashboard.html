@@ -200,10 +200,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h2 class="mb-0">Gerenciador de máquinas</h2>
                     </div>
-                    <div
-                        style="display: flex; justify-content: space-between; width: 12rem; margin-bottom: 1.6rem; text-shadow: 1px 1px 2px #0000;">
-                        <a class="btn btn-sm btn-primary" onclick="cadastrarTotem()">Cadastrar</a>
-                    </div>
+                    
                     <div class="table-responsive">
                         <table class="table text-start align-middle table-bordered table-hover mb-0">
                             <thead>
@@ -219,6 +216,10 @@
                         </table>
                     </div>
                 </div>
+            </div>
+
+            <div class="container-fluid pt-4 px-4">
+                <img class="col-12" src="img/legendaAlerta.png" alt="Legenda do alerta">
             </div>
             <!-- GERENCIADOR DE MÁQUINAS -->
         </div>
@@ -253,28 +254,53 @@
 
             activeComputers.forEach(c => {
                 listaTotens.innerHTML += `
-                    <td>ID-${c.id}</td>
+                    <td id='id${c.id}'>ID-${c.id}</td>
                     <td>${c.hostname}</td>
                     <td id=${c.id} class='bg-success'>ATIVO</td>
                     <td>
-                        <button class="btn btn-danger" onclick="reboot(${c.id})">REINICIAR</button>
+                        <button class="btn btn-danger" id='btnReboot' onclick="reboot(${c.id})">REINICIAR</button>
                     </td>
                 `
             });
 
             nonActiveComputers.forEach(c => {
-                listaTotens.innerHTML += `
-                    <td>ID-${c.id}</td>
-                    <td>${c.hostname}</td>
-                    <td id=${c.id} class='bg-danger'>DESATIVADO</td>
-                `
+                const computer = document.getElementById(`id${c.id}`);
+                if(computer == null){
+                    listaTotens.innerHTML += `
+                        <td>ID-${c.id}</td>
+                        <td>${c.hostname}</td>
+                        <td id=${c.id} class='bg-danger'>DESATIVADO</td>`
+                }
             });
         })
 
-        function reboot(id){
+        async function reboot(id){
             const elementStatus = document.getElementById(id);
-            elementStatus.classList.remove("bg-success");
-            elementStatus.innerHTML = "Em reinicialização";
+            const idComputer = elementStatus.id;
+            console.log(idComputer);
+            const response = await fetch("/computer/reboot", {
+                method: 'POST',
+                body: JSON.stringify({
+                    idComputer
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            if(response.ok){
+                elementStatus.classList.remove("bg-success");
+                elementStatus.classList.add("bg-danger");
+                elementStatus.innerHTML = "DESATIVADO";
+                btnReboot.disabled = true;
+                Swal.fire({
+                    title: "Totem Reiniciado com sucesso!",
+                    text: "Verifique se seus serviços foram iniciados corretamente.",
+                    color: "#fff",
+                    icon: "success",
+                    iconColor: "green",
+                    background: "#191C24",
+                });
+            }
         }
     </script>
 </body>

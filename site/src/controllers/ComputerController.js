@@ -1,14 +1,20 @@
 const model = require("../models/ComputerModel");
 
 async function findAll(res){
-    return res.send(await model.findAll());
+    res.send(await model.findAll());
 }
 
 async function findComputersHavingStatistics(res){
-    return res.send(await model.findComputersHavingStatistics());
+    res.send(await model.findComputersHavingStatistics());
+}
+
+async function reboot(req, res){
+    await model.reboot(req.body.idComputer)
+    res.status(200).send("Reiniciado com sucesso");
 }
 
 module.exports = {
     findAll,
-    findComputersHavingStatistics
+    findComputersHavingStatistics,
+    reboot
 }

@@ -11,4 +11,8 @@ router.get("/having", async(req, res) => {
     controller.findComputersHavingStatistics(res);
 });
 
+router.post("/reboot", async(req, res) => {
+    controller.reboot(req, res);
+});
+
 module.exports = router;
