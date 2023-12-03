@@ -15,4 +15,8 @@ router.get("/find", async(req, res) => {
     controller.findUserByType(req, res);
 });
 
+router.put("/updateMetric", function (req, res){
+    controller.updateMetric(req, res);
+});
+
 module.exports = router;

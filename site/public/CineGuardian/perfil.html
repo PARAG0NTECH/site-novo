@@ -307,6 +307,12 @@
             <script src="js/index.js"></script>
             <script>
 
+                var h6_name = document.getElementById("h6_name");
+                var type_user = document.getElementById("type_user");
+                
+                h6_name.innerHTML = localStorage.getItem("name");
+                type_user.innerHTML = localStorage.getItem("type")
+
                 window.addEventListener('DOMContentLoaded', async () => {
                     userNome.innerHTML = sessionStorage.name;
                     userEmail.innerHTML = sessionStorage.email;
@@ -314,6 +320,13 @@
                     h6_name.innerHTML = sessionStorage.name;
                     type_user.innerHTML = sessionStorage.type;
                     
+                    if(type == "dono"){
+                        navbar_content.innerHTML += `
+                            <a href="metricasGerente.html" class="nav-item nav-link" id="pag_cadastrar_metricas"><i
+                            class="fa fa-chart-bar me-2"></i>Métricas</a>
+                        `
+                    }
+
                     if(sessionStorage.type == "tecnico"){
                         navbar_content.innerHTML = `
                             <a href="chart.html" class="nav-item nav-link active" id="pag_estatisticas"><i

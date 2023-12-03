@@ -1,9 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <title>Totens</title>
+    <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -25,26 +24,14 @@
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
 
-    <!-- Customized Bootstrap Stylesheet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/metrica.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <title>Métrica</title>
 </head>
-
 <body>
     <div class="container-fluid position-relative d-flex p-0">
-        <!-- Spinner Start -->
-        <div id="spinner"
-            class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Carregando...</span>
-            </div>
-        </div>
-        <!-- Spinner End -->
-
-
-        <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-secondary navbar-dark">
                 <a href="CineGuardian.html" class="navbar-brand mx-4 mb-3">
@@ -69,10 +56,6 @@
                 </div>
             </nav>
         </div>
-        <!-- Sidebar End -->
-
-
-        <!-- Content Start -->
         <div class="content">
             <!-- Navbar Start -->
             <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
@@ -143,13 +126,13 @@
                     </div>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="./img/user-img.png" alt=""
+                            <img class="rounded-circle me-lg-2" src="/website/public/CineGuardian/img/user-img.png" alt=""
                                 style="width: 40px; height: 40px;">
                             <span class="d-none d-lg-inline-flex" id="span_nameUser"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="./perfil.html" class="dropdown-item">Meu perfil</a>
-                            <a href="./signin.html" class="dropdown-item">Sair</a>
+                            <a href="#" class="dropdown-item">Sair</a>
                         </div>
                     </div>
                 </div>
@@ -194,129 +177,94 @@
 
             <!-- Sales Chart End -->
 
-            <!-- GERENCIADOR DE MÁQUINAS -->
-            <div class="container-fluid pt-4 px-4">
-                <div class="bg-secondary text-center rounded p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h2 class="mb-0">Gerenciador de máquinas</h2>
-                    </div>
-<<<<<<< HEAD
-                    
-=======
-                    <div
-                        style="display: flex; justify-content: space-between; width: 12rem; margin-bottom: 1.6rem; text-shadow: 1px 1px 2px #0000;">
-                    </div>
->>>>>>> 553f03ae85b7cc582fca3b0907d47c369680d29d
-                    <div class="table-responsive">
-                        <table class="table text-start align-middle table-bordered table-hover mb-0">
-                            <thead>
-                                <tr class="text-white">
-                                    <th scope="col">Identificação</th>
-                                    <th scope="col">Apelido</th>
-                                    <th scope="col">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-white" id="listaTotens">
-                                
-                            </tbody>
-                        </table>
+           
+                <div class="container-fluid">
+                    <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
+                        <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                            <div class="bg-secondary rounded p-4 p-sm-5 my-4 mx-3" style="box-shadow: 0 0 80px #388697;">
+                                <div class="d-flex align-items-center justify-content-between mb-3"
+                                    style="flex-direction: column">
+                                    <a href="CineGuardian.html" class="">
+                                        <h3 class="text-primary"><img src="./img/pipoca.png" width="40" height="40"
+                                                alt="">CineGuardian</h3>
+                                    </a>
+                                    <h3 class="text-primary"
+                                        style="font-size: 2.3rem; text-align:center;color: #388697!important;text-shadow: -1px 1px 15px #388697;">
+                                        Métricas</h3>
+        
+                                </div>
+                                <div class="form-floating mb-3">
+                                    CPU:
+                                    <input  type="number" class="form-control" id="percentual_cpu" placeholder="CPU">
+                                    
+                                </div>
+                                RAM:
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="percentual_ram" placeholder="RAM">
+                                    
+                                </div>
+                                DISK:
+                                <div class="form-floating mb-4">
+                                    <input type="number" class="form-control" id="percentual_disk" placeholder="DISK">
+                                    
+                                </div>
+                                <button type="submit" class="btn btn-primary py-3 w-100 mb-4"
+                                    onclick="updateMetric()">Cadastrar Métricas</button>
+                                <!-- <p class="text-center mb-0">Já tem uma conta ? <a href="./signup.html">Login</a></p>
+                                <p class="text-center mb-0" style="margin-top: 1rem">Deseja fazer o cadastro de um ? <a href="./signupGerente.html">perfil gerencial </a>?</p> -->
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="container-fluid pt-4 px-4">
-                <img class="col-12" src="img/legendaAlerta.png" alt="Legenda do alerta">
-            </div>
-            <!-- GERENCIADOR DE MÁQUINAS -->
+            
         </div>
-        <!-- Content End -->
-
-
-    </div>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/chart/chart.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="./js/actions.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/index.js"></script>
-    <script>
-
-        
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            h6_name.innerHTML = sessionStorage.name;
-            type_user.innerHTML = sessionStorage.type;
-            const response = await fetch("/computer/having");
-            const activeComputers = await response.json();
-            const res = await fetch("/computer/find");
-            const nonActiveComputers = await res.json();
-
-
-            if(type == "dono"){
-                navbar_content.innerHTML += `
-                    <a href="metricasGerente.html" class="nav-item nav-link" id="pag_cadastrar_metricas"><i
-                    class="fa fa-chart-bar me-2"></i>Métricas</a>
-                `
-            }
-            activeComputers.forEach(c => {
-                listaTotens.innerHTML += `
-                    <td id='id${c.id}'>ID-${c.id}</td>
-                    <td>${c.hostname}</td>
-                    <td id=${c.id} class='bg-success'>ATIVO</td>
-                    <td>
-                        <button class="btn btn-danger" id='btnReboot' onclick="reboot(${c.id})">REINICIAR</button>
-                    </td>
-                `
-            });
-
-            nonActiveComputers.forEach(c => {
-                const computer = document.getElementById(`id${c.id}`);
-                if(computer == null){
-                    listaTotens.innerHTML += `
-                        <td>ID-${c.id}</td>
-                        <td>${c.hostname}</td>
-                        <td id=${c.id} class='bg-danger'>DESATIVADO</td>`
-                }
-            });
-        })
-
-        async function reboot(id){
-            const elementStatus = document.getElementById(id);
-            const idComputer = elementStatus.id;
-            console.log(idComputer);
-            const response = await fetch("/computer/reboot", {
-                method: 'POST',
-                body: JSON.stringify({
-                    idComputer
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            if(response.ok){
-                elementStatus.classList.remove("bg-success");
-                elementStatus.classList.add("bg-danger");
-                elementStatus.innerHTML = "DESATIVADO";
-                btnReboot.disabled = true;
-                Swal.fire({
-                    title: "Totem Reiniciado com sucesso!",
-                    text: "Verifique se seus serviços foram iniciados corretamente.",
-                    color: "#fff",
-                    icon: "success",
-                    iconColor: "green",
-                    background: "#191C24",
-                });
-            }
-        }
-    </script>
+</div>
 </body>
+</html>
+
+<script>
+
+    var user_name = document.getElementById("h6_name");
+
+    user_name.innerHTML = localStorage.getItem("name")
+    span_nameUser.innerHTML = localStorage.getItem("name")
+    
+    function updateMetric(){
+        var percentualCPUVar = percentual_cpu.value;
+        var percentualDISKVar = percentual_disk.value;
+        var percentualRAMVar = percentual_ram.value;
+
+        if(type == "dono"){
+            navbar_content.innerHTML += `
+                <a href="metricasGerente.html" class="nav-item nav-link active" id="pag_cadastrar_metricas"><i
+                class="fa fa-chart-bar me-2"></i>Métricas</a>
+            `
+        }
+
+        if (percentualCPUVar == "" || percentualDISKVar == "" || percentualRAMVar == "") {
+            alert("Preencha os campos corretamente");
+            return false;
+        }
+        fetch("/user/updateMetric", {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({
+                cpu: percentualCPUVar,
+                ram: percentualRAMVar,
+                disk: percentualDISKVar
+            })
+        }).then(function (resposta) {
+            console.log("resposta : ", resposta)
+            if (resposta.ok) {
+                alert("Atualização feita.");
+            } else {
+                throw ("Erro ao realizar cadastro!");
+            }
+        }).catch(function (resposta) {
+            console.log(`#ERRO: ${resposta}`);
+        });
+        return false
+    }
+</script>

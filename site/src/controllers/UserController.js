@@ -17,8 +17,7 @@ async function login(req, res) {
         res.status(400).send({ message: "E-mail ou Senha inválidos"});
     } else {
         res.send(user);
-    }
-    
+    }   
 }
 
 async function findUserByType(req, res) {
@@ -26,8 +25,20 @@ async function findUserByType(req, res) {
     res.send(await model.findUserByType(type));
 }
 
+async function updateMetric(req, res) {
+    const metric = {
+        cpu: req.body.cpu,
+        ram: req.body.ram,
+        disk: req.body.disk
+    }
+    res.send(await model.updateMetric(metric.ram, metric.disk, metric.cpu));
+}
+
+
+
 module.exports = {
     create,
     login,
-    findUserByType
+    findUserByType,
+    updateMetric    
 }

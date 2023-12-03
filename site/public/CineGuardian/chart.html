@@ -231,7 +231,8 @@
         var chartCPU;
         var chartRam;
         var chartDisk;
- 
+        span_nameUser.innerHTML = localStorage.getItem("name")
+
         window.addEventListener('DOMContentLoaded', async () => {
             const type = sessionStorage.type;
             const name = sessionStorage.name;
@@ -241,6 +242,12 @@
                 navbar_content.innerHTML = `
                     <a href="chart.html" class="nav-item nav-link active" id="pag_estatisticas"><i
                     class="fa fa-chart-bar me-2"></i>Estatísticas</a>
+                `
+            }
+            if(type == "dono"){
+                navbar_content.innerHTML += `
+                    <a href="metricasGerente.html" class="nav-item nav-link" id="pag_cadastrar_metricas"><i
+                    class="fa fa-chart-bar me-2"></i>Métricas</a>
                 `
             }
             const response = await fetch('/computer/having');
